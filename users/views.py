@@ -4,8 +4,9 @@ from rest_framework.generics import (CreateAPIView, DestroyAPIView,
                                      ListAPIView, RetrieveAPIView,
                                      UpdateAPIView)
 
-from users.models import User, Payment
-from users.serializers import UserSerializer, PaymentSerializer, UserProfileSerializer
+from users.models import Payment, User
+from users.serializers import (PaymentSerializer, UserProfileSerializer,
+                               UserSerializer)
 
 
 class UserCreateApiView(CreateAPIView):
@@ -42,6 +43,10 @@ class PaymentListApiView(ListAPIView):
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
-    filterset_fields = ('paid_course', 'paid_lesson', 'payment_method', )  # фильтрация по курсу, уроку, способу оплаты
-    ordering_fields = ('payment_date', )  # сортировка по дате оплаты
-    ordering = ('-payment_date', )
+    filterset_fields = (
+        "paid_course",
+        "paid_lesson",
+        "payment_method",
+    )  # фильтрация по курсу, уроку, способу оплаты
+    ordering_fields = ("payment_date",)  # сортировка по дате оплаты
+    ordering = ("-payment_date",)

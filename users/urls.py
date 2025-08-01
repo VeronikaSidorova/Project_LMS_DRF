@@ -1,9 +1,10 @@
 from django.urls import path
 
 from lms.apps import LmsConfig
-from users.views import (UserCreateApiView, UserDestroyApiView,
+from users.views import (PaymentCreateApiView, PaymentListApiView,
+                         UserCreateApiView, UserDestroyApiView,
                          UserListApiView, UserRetrieveApiView,
-                         UserUpdateApiView, PaymentListApiView, PaymentCreateApiView)
+                         UserUpdateApiView)
 
 app_name = LmsConfig.name
 
@@ -17,7 +18,6 @@ urlpatterns = [
         name="users_delete",
     ),
     path("<int:pk>/update/", UserUpdateApiView.as_view(), name="users_update"),
-
     path("payments/create/", PaymentCreateApiView.as_view(), name="payment_create"),
     path("payments/", PaymentListApiView.as_view(), name="payment_list"),
 ]

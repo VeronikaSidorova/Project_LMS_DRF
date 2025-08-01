@@ -2,6 +2,7 @@ from rest_framework.serializers import ModelSerializer, SerializerMethodField
 
 from lms.models import Course, Lesson
 
+
 class LessonSerializer(ModelSerializer):
     class Meta:
         model = Lesson
@@ -18,4 +19,3 @@ class CourseSerializer(ModelSerializer):
 
     def get_lesson_count(self, obj):
         return obj.lessons.count()
-
