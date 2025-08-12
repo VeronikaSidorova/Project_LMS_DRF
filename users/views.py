@@ -1,17 +1,22 @@
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters
 from rest_framework.generics import (CreateAPIView, DestroyAPIView,
                                      ListAPIView, RetrieveAPIView,
                                      UpdateAPIView)
+from rest_framework.permissions import AllowAny
 
-from users.models import Payment, User
-from users.serializers import (PaymentSerializer, UserProfileSerializer,
-                               UserSerializer)
+from users.models import User
+from users.serializers import UserProfileSerializer, UserSerializer
 
 
 class UserCreateApiView(CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = (AllowAny,)
+
+    def perform_create(self, serializer):
+        user = serializer.save()
+        user.set_password(serializer.validated_data["password"])
+        user.is_active = True
+        user.save()
 
 
 class UserListApiView(ListAPIView):
@@ -32,21 +37,3 @@ class UserUpdateApiView(UpdateAPIView):
 class UserDestroyApiView(DestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-
-
-class PaymentCreateApiView(CreateAPIView):
-    queryset = Payment.objects.all()
-    serializer_class = PaymentSerializer
-
-
-class PaymentListApiView(ListAPIView):
-    queryset = Payment.objects.all()
-    serializer_class = PaymentSerializer
-    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
-    filterset_fields = (
-        "paid_course",
-        "paid_lesson",
-        "payment_method",
-    )  # фильтрация по курсу, уроку, способу оплаты
-    ordering_fields = ("payment_date",)  # сортировка по дате оплаты
-    ordering = ("-payment_date",)
