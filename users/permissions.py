@@ -1,5 +1,6 @@
 from rest_framework import permissions
 
+
 class IsModer(permissions.BasePermission):
     """Проверяет, является ли пользователь модератором."""
 
@@ -14,4 +15,3 @@ class IsOwner(permissions.BasePermission):
         if obj.owner == request.user:
             return True
         return False
-
