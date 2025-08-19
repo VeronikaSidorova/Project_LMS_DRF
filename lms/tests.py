@@ -170,7 +170,9 @@ class SubscriptionTestCase(APITestCase):
 
     def test_subscribe_to_course(self):
         # Проверяем, что в начале пользователь не подписан на курс
-        self.assertFalse(Subscription.objects.filter(user=self.user, course=self.course).exists())
+        self.assertFalse(
+            Subscription.objects.filter(user=self.user, course=self.course).exists()
+        )
 
         # Подписка на курс
         response = self.client.post(reverse("lms:subscription"), {"id": self.course.pk})
@@ -178,14 +180,18 @@ class SubscriptionTestCase(APITestCase):
         # Проверяем, что подписка успешно добавлена
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["message"], "Подписка добавлена")
-        self.assertTrue(Subscription.objects.filter(user=self.user, course=self.course).exists())
+        self.assertTrue(
+            Subscription.objects.filter(user=self.user, course=self.course).exists()
+        )
 
     def test_unsubscribe_from_course(self):
         # Сначала подписываем пользователя на курс
         Subscription.objects.create(user=self.user, course=self.course)
 
         # Проверяем, что подписка существует
-        self.assertTrue(Subscription.objects.filter(user=self.user, course=self.course).exists())
+        self.assertTrue(
+            Subscription.objects.filter(user=self.user, course=self.course).exists()
+        )
 
         # Отмена подписки
         response = self.client.post(reverse("lms:subscription"), {"id": self.course.pk})
@@ -193,7 +199,9 @@ class SubscriptionTestCase(APITestCase):
         # Проверяем, что подписка успешно удалена
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["message"], "Подписка удалена")
-        self.assertFalse(Subscription.objects.filter(user=self.user, course=self.course).exists())
+        self.assertFalse(
+            Subscription.objects.filter(user=self.user, course=self.course).exists()
+        )
 
     def test_subscribe_twice(self):
         # Подписываемся на курс
@@ -204,12 +212,15 @@ class SubscriptionTestCase(APITestCase):
 
         # Проверяем, что сообщение об ошибке не возвращается
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["message"], "Подписка удалена")  # Проверка, что действие верно
+        self.assertEqual(
+            response.data["message"], "Подписка удалена"
+        )  # Проверка, что действие верно
 
     def test_unsuscribe_non_existent(self):
         # Проверка, что пользователь не может отписаться от несуществующей подписки
         response = self.client.post(reverse("lms:subscription"), {"id": self.course.pk})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["message"], "Подписка добавлена")  # Проверяем, что создана новая подписка
-
+        self.assertEqual(
+            response.data["message"], "Подписка добавлена"
+        )  # Проверяем, что создана новая подписка

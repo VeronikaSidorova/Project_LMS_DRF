@@ -1,13 +1,8 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, status
-from rest_framework.generics import (
-    CreateAPIView,
-    DestroyAPIView,
-    ListAPIView,
-    RetrieveAPIView,
-    UpdateAPIView,
-    get_object_or_404,
-)
+from rest_framework.generics import (CreateAPIView, DestroyAPIView,
+                                     ListAPIView, RetrieveAPIView,
+                                     UpdateAPIView, get_object_or_404)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -15,8 +10,10 @@ from rest_framework.viewsets import ModelViewSet
 
 from lms.models import Course, Lesson, Payment, Subscription
 from lms.paginations import CustomPagination
-from lms.serializers import CourseSerializer, LessonSerializer, PaymentSerializer
+from lms.serializers import (CourseSerializer, LessonSerializer,
+                             PaymentSerializer)
 from users.permissions import IsModer, IsOwner
+from lms.services import create_payment
 
 
 class CourseViewSet(ModelViewSet):
@@ -93,6 +90,28 @@ class PaymentCreateApiView(CreateAPIView):
         payment = serializer.save()
         payment.owner = self.request.user
         payment.save()
+
+
+class CreatePaymentApiView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, course_id):
+        # Получаем курс по ID
+        course = get_object_or_404(Course, id=course_id)
+
+        try:
+            # Вызываем сервисную функцию для создания платежа
+            payment_info = create_payment(user=request.user, course_id=course.id)
+            if "error" in payment_info:
+                return Response(
+                    {"error": payment_info["error"]}, status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Возвращаем ответ с ссылкой на оплату
+            return Response(payment_info, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            # Обработка ошибок и возврат ответа с ошибкой
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class PaymentListApiView(ListAPIView):

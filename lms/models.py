@@ -30,6 +30,13 @@ class Course(models.Model):
         verbose_name="Владелец курса",
         help_text="Укажите владельца курса",
     )
+    price = models.IntegerField(
+        default=500,
+        null=True,
+        blank=True,
+        verbose_name="Цена курса",
+        help_text="Укажите стоимость курса",
+    )
 
     class Meta:
         verbose_name = "Курс"
@@ -72,6 +79,13 @@ class Lesson(models.Model):
         verbose_name="Владелец урока",
         help_text="Укажите владельца урока",
     )
+    price = models.IntegerField(
+        default=0,
+        null=True,
+        blank=True,
+        verbose_name="Цена урока",
+        help_text="Укажите стоимость урока",
+    )
 
     class Meta:
         verbose_name = "Урок"
@@ -107,6 +121,20 @@ class Payment(models.Model):
     )
     payment_method = models.CharField(
         max_length=10, choices=PAYMENT_METHODS, verbose_name="Способ оплаты"
+    )
+    session_id = models.CharField(
+        max_length=250,
+        blank=True,
+        null=True,
+        verbose_name="ID сессии",
+        help_text="Укажите ID сессии",
+    )
+    link = models.URLField(
+        max_length=400,
+        blank=True,
+        null=True,
+        verbose_name="Ссылка на оплату",
+        help_text="Укажите ссылку на оплату",
     )
 
     class Meta:
