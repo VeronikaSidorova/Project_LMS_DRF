@@ -16,7 +16,10 @@ def create_product(course):
         headers={"Authorization": f"Bearer {STRIPE_SECRET_KEY}"},
     )
     if product_response.status_code != 200:
-        return None, {"error": "Failed to create product", "details": product_response.json()}
+        return None, {
+            "error": "Failed to create product",
+            "details": product_response.json(),
+        }
 
     return product_response.json(), None
 
@@ -33,7 +36,10 @@ def create_price(product_id, course_price):
         headers={"Authorization": f"Bearer {STRIPE_SECRET_KEY}"},
     )
     if price_response.status_code != 200:
-        return None, {"error": "Failed to create price", "details": price_response.json()}
+        return None, {
+            "error": "Failed to create price",
+            "details": price_response.json(),
+        }
 
     return price_response.json(), None
 

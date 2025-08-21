@@ -8,12 +8,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
+from config.tasks import send_update_letter
 from lms.models import Course, Lesson, Payment, Subscription
 from lms.paginations import CustomPagination
 from lms.serializers import (CourseSerializer, LessonSerializer,
                              PaymentSerializer)
-from users.permissions import IsModer, IsOwner
 from lms.services import create_payment
+from users.permissions import IsModer, IsOwner
 
 
 class CourseViewSet(ModelViewSet):
@@ -25,6 +26,16 @@ class CourseViewSet(ModelViewSet):
         course = serializer.save()
         course.owner = self.request.user
         course.save()
+
+    def perform_update(self, serializer):
+        course = serializer.save()
+        # Получаем всех пользователей, подписанных на обновления курса
+        subscribed_users = Subscription.objects.filter(course=course).values_list(
+            "user__email", flat=True
+        )
+
+        # Отправляем асинхронное письмо
+        send_update_letter().delay(course.title, list(subscribed_users))
 
     def get_queryset(self):
         if self.request.user.groups.filter(name="moders").exists():
@@ -47,9 +58,22 @@ class LessonCreateApiView(CreateAPIView):
     permission_classes = (~IsModer, IsAuthenticated)
 
     def perform_create(self, serializer):
-        lesson = serializer.save()
-        lesson.owner = self.request.user
-        lesson.save()
+        lesson = serializer.save(
+            owner=self.request.user
+        )  # Сохраняем урок и устанавливаем владельца
+
+        # Получаем курс, к которому добавляется урок
+        course = get_object_or_404(Course, id=self.request.data.get("course"))
+
+        # Получаем всех пользователей, подписанных на обновления курса
+        subscribed_users = Subscription.objects.filter(course=course).values_list(
+            "user__email", flat=True
+        )
+
+        # Отправляем асинхронное письмо
+        send_update_letter.delay(course.name, list(subscribed_users))
+
+        return lesson
 
 
 class LessonListApiView(ListAPIView):

@@ -37,6 +37,7 @@ class Course(models.Model):
         verbose_name="Цена курса",
         help_text="Укажите стоимость курса",
     )
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = "Курс"
