@@ -141,7 +141,7 @@ CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 
 CELERY_BEAT_SCHEDULE = {
     "check_inactive_users": {
-        "task": "lms.tasks.check_inactive_users",
+        "task": "users.tasks.check_inactive_users",
         "schedule": crontab(hour=0, minute=0),  # Каждый день в полночь
     },
 }

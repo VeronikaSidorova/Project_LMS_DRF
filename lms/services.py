@@ -6,6 +6,7 @@ from lms.models import Course, Payment
 
 
 def create_product(course):
+    """Функция создания продукта"""
     product_data = {
         "name": course.name,
         "description": course.description,
@@ -25,6 +26,7 @@ def create_product(course):
 
 
 def create_price(product_id, course_price):
+    """Функция создания цены"""
     price_data = {
         "unit_amount": int(course_price * 100),
         "currency": "rub",
@@ -45,6 +47,7 @@ def create_price(product_id, course_price):
 
 
 def create_checkout_session(price_id):
+    """Функция создания сессии"""
     session_data = {
         "payment_method_types[]": ["card"],
         "line_items[0][price]": price_id,
@@ -65,6 +68,7 @@ def create_checkout_session(price_id):
 
 
 def create_payment(user, course_id):
+    """Функция создания платежа"""
     # Получаем курс
     course = get_object_or_404(Course, id=course_id)
 
