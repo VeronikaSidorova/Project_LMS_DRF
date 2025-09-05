@@ -1,0 +1,75 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres
+    container_name: postgres_db
+    env_file:
+      - .env
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis_cache
+    ports:
+      - "6379:6379"
+    networks:
+      - app_network
+
+  backend:
+    build: .
+    container_name: backend_app
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - .:/app
+    networks:
+      - app_network
+
+  celery:
+    build: .
+    container_name: celery_worker
+    env_file:
+      - .env
+    command: poetry run celery -A config worker --loglevel=info
+    depends_on:
+      - redis
+      - postgres
+      - backend
+    volumes:
+      - .:/app
+    networks:
+      - app_network
+
+  celery_beat:
+    build: .
+    container_name: celery_beat
+    env_file:
+      - .env
+    command: poetry run celery -A config beat --loglevel=info
+    depends_on:
+      - redis
+      - postgres
+      - backend
+      - celery
+    volumes:
+      - .:/app
+    networks:
+      - app_network
+
+volumes:
+  postgres_data:
+
+networks:
+  app_network:
+    driver: bridge

@@ -16,9 +16,6 @@ RUN pip install poetry
 # Копируем pyproject.toml и poetry.lock для установки зависимостей
 COPY pyproject.toml poetry.lock ./
 
-RUN poetry env remove python
-RUN poetry install
-
 # Устанавливаем зависимости Python с помощью Poetry
 RUN poetry install --no-root
 
