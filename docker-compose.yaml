@@ -4,8 +4,10 @@ services:
   postgres:
     image: postgres
     container_name: postgres_db
-    env_file:
-      - .env
+    environment:
+      - POSTGRES_DB=${NAME}
+      - POSTGRES_USER=${USER}
+      - POSTGRES_PASSWORD=${PASSWORD}
     ports:
       - "5433:5432"
     volumes:
