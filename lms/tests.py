@@ -1,5 +1,3 @@
-from itertools import count
-
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -52,8 +50,11 @@ class CourseTestCase(APITestCase):
         self.assertEqual(Course.objects.all().count(), 0)
 
     def test_course_list(self):
+        self.maxDiff=None
         url = reverse("lms:course-list")
         response = self.client.get(url)
+        lesson_updated_at = self.course.updated_at
+        expected_updated_at_str = lesson_updated_at.isoformat().replace('+00:00', 'Z')
         data = response.json()
         result = {
             "count": 1,
@@ -61,24 +62,27 @@ class CourseTestCase(APITestCase):
             "previous": None,
             "results": [
                 {
+                    'description': self.course.description,
                     "id": self.course.pk,
-                    "lesson_count": 1,
                     "is_subscribed": False,
+                    "lesson_count": 1,
                     "lessons": [
                         {
-                            "id": self.lesson.pk,
-                            "video_url": None,
-                            "name": self.lesson.name,
-                            "description": self.lesson.description,
-                            "preview_image": None,
                             "course": self.course.pk,
+                            "description": self.lesson.description,
+                            "id": self.lesson.pk,
+                            "name": self.lesson.name,
                             "owner": self.user.pk,
+                            "preview_image": None,
+                            'price': self.lesson.price,
+                            "video_url": None,
                         }
                     ],
                     "name": self.course.name,
-                    "description": self.course.description,
-                    "preview_image": None,
                     "owner": self.user.pk,
+                    "preview_image": None,
+                    'price': 500,
+                    'updated_at': expected_updated_at_str
                 }
             ],
         }
@@ -90,6 +94,7 @@ class LessonTestCase(APITestCase):
 
     def setUp(self):
         self.user = User.objects.create(email="test@test.com")
+        self.client.force_authenticate(user=self.user)
         self.course = Course.objects.create(
             name="Course 1", description="This is course number 1", owner=self.user
         )
@@ -99,7 +104,6 @@ class LessonTestCase(APITestCase):
             course=self.course,
             owner=self.user,
         )
-        self.client.force_authenticate(user=self.user)
 
     def test_lesson_retrieve(self):
         url = reverse("lms:lessons_retrieve", args=(self.lesson.pk,))
@@ -110,7 +114,7 @@ class LessonTestCase(APITestCase):
 
     def test_lesson_create(self):
         url = reverse("lms:lessons_create")
-        data = {"name": "Lesson 2", "description": "This is lesson number 2"}
+        data = {"name": "Lesson 2", "description": "This is lesson number 2", "course": self.course.id}
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Lesson.objects.all().count(), 2)
@@ -139,13 +143,14 @@ class LessonTestCase(APITestCase):
             "previous": None,
             "results": [
                 {
-                    "id": self.lesson.pk,
-                    "video_url": None,
-                    "name": self.lesson.name,
-                    "description": self.lesson.description,
-                    "preview_image": None,
                     "course": self.lesson.course.pk,
+                    "description": self.lesson.description,
+                    "id": self.lesson.pk,
+                    "name": self.lesson.name,
                     "owner": self.user.pk,
+                    "preview_image": None,
+                    "price": self.lesson.price,
+                    "video_url": None,
                 }
             ],
         }
