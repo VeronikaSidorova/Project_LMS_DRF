@@ -1,8 +1,13 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, status
-from rest_framework.generics import (CreateAPIView, DestroyAPIView,
-                                     ListAPIView, RetrieveAPIView,
-                                     UpdateAPIView, get_object_or_404)
+from rest_framework.generics import (
+    CreateAPIView,
+    DestroyAPIView,
+    ListAPIView,
+    RetrieveAPIView,
+    UpdateAPIView,
+    get_object_or_404,
+)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -11,8 +16,7 @@ from rest_framework.viewsets import ModelViewSet
 from config.tasks import send_update_letter
 from lms.models import Course, Lesson, Payment, Subscription
 from lms.paginations import CustomPagination
-from lms.serializers import (CourseSerializer, LessonSerializer,
-                             PaymentSerializer)
+from lms.serializers import CourseSerializer, LessonSerializer, PaymentSerializer
 from lms.services import create_payment
 from users.permissions import IsModer, IsOwner
 

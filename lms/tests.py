@@ -50,11 +50,11 @@ class CourseTestCase(APITestCase):
         self.assertEqual(Course.objects.all().count(), 0)
 
     def test_course_list(self):
-        self.maxDiff=None
+        self.maxDiff = None
         url = reverse("lms:course-list")
         response = self.client.get(url)
         lesson_updated_at = self.course.updated_at
-        expected_updated_at_str = lesson_updated_at.isoformat().replace('+00:00', 'Z')
+        expected_updated_at_str = lesson_updated_at.isoformat().replace("+00:00", "Z")
         data = response.json()
         result = {
             "count": 1,
@@ -62,7 +62,7 @@ class CourseTestCase(APITestCase):
             "previous": None,
             "results": [
                 {
-                    'description': self.course.description,
+                    "description": self.course.description,
                     "id": self.course.pk,
                     "is_subscribed": False,
                     "lesson_count": 1,
@@ -74,15 +74,15 @@ class CourseTestCase(APITestCase):
                             "name": self.lesson.name,
                             "owner": self.user.pk,
                             "preview_image": None,
-                            'price': self.lesson.price,
+                            "price": self.lesson.price,
                             "video_url": None,
                         }
                     ],
                     "name": self.course.name,
                     "owner": self.user.pk,
                     "preview_image": None,
-                    'price': 500,
-                    'updated_at': expected_updated_at_str
+                    "price": 500,
+                    "updated_at": expected_updated_at_str,
                 }
             ],
         }
@@ -114,7 +114,11 @@ class LessonTestCase(APITestCase):
 
     def test_lesson_create(self):
         url = reverse("lms:lessons_create")
-        data = {"name": "Lesson 2", "description": "This is lesson number 2", "course": self.course.id}
+        data = {
+            "name": "Lesson 2",
+            "description": "This is lesson number 2",
+            "course": self.course.id,
+        }
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Lesson.objects.all().count(), 2)

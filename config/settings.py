@@ -4,7 +4,6 @@ from datetime import timedelta
 from pathlib import Path
 
 from celery.schedules import crontab
-from django.conf.global_settings import STATICFILES_DIRS, STATIC_ROOT
 from dotenv import load_dotenv
 
 load_dotenv(override=True)
@@ -166,7 +165,6 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 CASHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": "redis://redis:6379/1",
     }
 }
 
@@ -177,11 +175,11 @@ if "test" in sys.argv:
             "NAME": BASE_DIR / "test_db.sqlite3",
         }
     }
-    CELERY_BROKER_URL = 'memory://'
-    CELERY_RESULT_BACKEND = 'memory://'
+    CELERY_BROKER_URL = "memory://"
+    CELERY_RESULT_BACKEND = "memory://"
     CELERY_ALWAYS_EAGER = True
     CACHES = {
-        'default': {
-            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
         }
     }
