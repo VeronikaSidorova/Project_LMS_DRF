@@ -70,7 +70,7 @@ jobs:
 
     steps:
       - name: Set up SSH
-        uses: crazy-max/ghaction-ssh-agent
+        uses: crazy-max/ghaction-ssh-agent@v2
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
 
