@@ -74,12 +74,6 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
 
-      - name: Debug SSH Key
-        run: |
-          echo "Checking SSH key format..."
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" | head -2  # Проверить первые строки (без вывода полного ключа)
-          # Если нужно, добавьте: ssh-keygen -l -f /dev/stdin <<< "${{ secrets.SSH_PRIVATE_KEY }}"
-
       - name: Deploy to server
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
