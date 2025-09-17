@@ -16,9 +16,7 @@ jobs:
 
       - name: Install flake8
         run: |
-          curl -sSL https://install.python-poetry.org | python3 -
-          export PATH="$HOME/.local/bin:$PATH"
-          poetry add --lint flake8
+          poetry install
 
       - name: Run flake8
         run: flake8 .
