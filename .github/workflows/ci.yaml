@@ -44,7 +44,7 @@ jobs:
 
       - name: Run tests
         env:
-          DJANGO_SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: poetry run python manage.py test
 
   build:
