@@ -16,11 +16,12 @@ jobs:
 
       - name: Install flake8
         run: |
-          curl -sSL https://install.python-poetry.org | python3 -
-          export PATH="$HOME/.local/bin:$PATH"
+          python -m pip install --upgrade pip
+          pip install poetry
+          poetry install --no-root
 
       - name: Run flake8
-        run: flake8 .
+        run: poetry run flake8 .
 
   test:
     needs: lint
@@ -37,9 +38,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          curl -sSL https://install.python-poetry.org | python3 -
-          export PATH="$HOME/.local/bin:$PATH"
-          poetry install
+          python -m pip install --upgrade pip
+          pip install poetry
+          poetry install --no-root
 
       - name: Run tests
         run: python manage.py test
